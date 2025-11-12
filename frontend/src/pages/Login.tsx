@@ -17,18 +17,26 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate login - later connect to Python backend
-    setTimeout(() => {
-      if (username && password) {
-        // Mock successful login
+    try {
+      // ✅ Connect to Python backend through Electron
+      const response = await window.MetaWipeAPI.loginUser(username, password);
+      console.log("Login Response:", response);
+
+      if (response && response.toLowerCase().includes("welcome")) {
         localStorage.setItem("metawipe_user", username);
         toast.success("Login successful!");
         navigate("/dashboard");
+      } else if (response && response.toLowerCase().includes("invalid")) {
+        toast.error("Invalid username or password");
       } else {
-        toast.error("Please enter both username and password");
+        toast.error("Unexpected response from backend");
       }
-      setLoading(false);
-    }, 800);
+    } catch (error) {
+      console.error("Login Error:", error);
+      toast.error("Failed to connect to backend");
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -73,11 +81,7 @@ const Login = () => {
                 className="bg-secondary border-border"
               />
             </div>
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-            >
+            <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Signing in..." : "Sign In"}
             </Button>
           </form>

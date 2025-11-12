@@ -1,5 +1,6 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
+const { execFile, spawn } = require("child_process");
 const net = require("net");
 
 function createWindow() {
@@ -8,43 +9,70 @@ function createWindow() {
     height: 800,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-      nodeIntegration: false,
       contextIsolation: true,
+      nodeIntegration: false,
     },
   });
 
-  const port = 8080; // ✅ the port your Vite app uses
+  // Connect to Vite (development)
+  const port = 8080;
   const devURL = `http://localhost:${port}`;
-  const fallbackFile = path.join(__dirname, "../dist/index.html");
+  const prodFile = path.join(__dirname, "../frontend/dist/index.html");
 
-  // 🔍 Wait for Vite to actually start before loading
   const tryConnect = setInterval(() => {
     const socket = new net.Socket();
     socket
       .connect(port, "127.0.0.1", () => {
         clearInterval(tryConnect);
         socket.end();
-        console.log(`✅ Connected to Vite at ${devURL}`);
+        console.log(`✅ Connected to ${devURL}`);
         win.loadURL(devURL);
       })
       .on("error", () => {
-        console.log(`⏳ Waiting for Vite to start on port ${port}...`);
+        console.log(`⏳ Waiting for Vite on port ${port}...`);
       });
   }, 1000);
 
-  // If load fails (like in production mode)
   win.webContents.on("did-fail-load", () => {
-    console.log("⚠️ Falling back to local build (dist folder)");
-    win.loadFile(fallbackFile);
-  });
-
-  win.webContents.on("did-finish-load", () => {
-    console.log("🚀 MetaWipe frontend loaded successfully!");
+    console.log("⚠️ Fallback: loading local build");
+    win.loadFile(prodFile);
   });
 }
 
-app.whenReady().then(createWindow);
+// ✅ Run C Wipe Engine
+ipcMain.handle("run-wipe", async (event, { filePath, method }) => {
+  return new Promise((resolve, reject) => {
+    const exePath = path.join(__dirname, "../core/build/wipe_engine.exe");
+    console.log("🧹 Running:", exePath, filePath, method);
 
+    execFile(exePath, [filePath, method], (error, stdout, stderr) => {
+      if (error) {
+        console.error("❌ Error:", stderr);
+        reject(stderr);
+      } else {
+        console.log("✅ Output:", stdout);
+        resolve(stdout);
+      }
+    });
+  });
+});
+
+// ✅ Run Python Login Script
+ipcMain.handle("login-user", async (event, { username, password }) => {
+  return new Promise((resolve, reject) => {
+    const pyPath = path.join(__dirname, "../python/login.py");
+    console.log("🔐 Executing:", pyPath);
+
+    const py = spawn("python", [pyPath, username, password]);
+
+    let output = "";
+    py.stdout.on("data", (data) => (output += data.toString()));
+    py.stderr.on("data", (err) => console.error("⚠️ Python Error:", err.toString()));
+    py.on("close", () => resolve(output.trim()));
+  });
+});
+
+app.whenReady().then(createWindow);
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });

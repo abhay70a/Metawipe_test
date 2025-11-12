@@ -1,0 +1,47 @@
+[
+  {
+    "timestamp": "2025-10-14 13:56:36",
+    "file": "tests/test_files/test.img",
+    "size_MB": 50.00,
+    "method": "dod3",
+    "status": "success",
+    "before_hash": "8565a714dca840f8652c5bae9249ab05f5fb5a4f9f13fbe23304b10f68252da2",
+    "after_hash": "790f2bd86967a86a6fa90f1d77b0dea4f35982662d15715628c52a409f99a903"
+  },
+  {
+    "timestamp": "2025-10-14 14:05:56",
+    "file": "/mnt/c/Users/HP/OneDrive/Documents/testfile.txt",
+    "size_MB": 0.00,
+    "method": "dod3",
+    "status": "success",
+    "before_hash": "6ca6ed361f03740f1b358f26403604d24538bc7b924d3f80fe1d431fac25939c",
+    "after_hash": "085c4e851d6fd824f09d8ab3146c5bba05d8cebc98dde0d131964b74e2c64df1"
+  }
+]
+{
+  "timestamp": "2025-10-15 03:49:48",
+  "file": "tests/test_files/test.img",
+  "size_MB": 50.00,
+  "method": "zero",
+  "status": "success",
+  "before_hash": "790f2bd86967a86a6fa90f1d77b0dea4f35982662d15715628c52a409f99a903",
+  "after_hash": "8565a714dca840f8652c5bae9249ab05f5fb5a4f9f13fbe23304b10f68252da2"
+}
+{
+  "timestamp": "2025-10-15 03:53:56",
+  "file": "tests/test_files/test.img",
+  "size_MB": 50.00,
+  "method": "random",
+  "status": "success",
+  "before_hash": "8565a714dca840f8652c5bae9249ab05f5fb5a4f9f13fbe23304b10f68252da2",
+  "after_hash": "95ac08b50f45c4686100b07691ab7000cd2c4ed166ef1235c9bf5492060f5932"
+}
+{
+  "timestamp": "2025-10-15 04:08:38",
+  "file": "tests/test_files/test.img",
+  "size_MB": 50.00,
+  "method": "zero",
+  "status": "success",
+  "before_hash": "95ac08b50f45c4686100b07691ab7000cd2c4ed166ef1235c9bf5492060f5932",
+  "after_hash": "8565a714dca840f8652c5bae9249ab05f5fb5a4f9f13fbe23304b10f68252da2"
+}
